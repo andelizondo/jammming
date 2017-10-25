@@ -5,16 +5,19 @@ import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
 
+const defaultState = {
+  searchResults: [],
+  playlistName: '',
+  playlistTracks: [],
+  isCreated: false
+};
+
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     // Initial App State
-    this.state = {
-      searchResults: [],
-      playlistName: "",
-      playlistTracks: [],
-    };
+    this.state = defaultState;
 
     // Binding Methods
     this.addTrack = this.addTrack.bind(this);
@@ -49,15 +52,17 @@ class App extends React.Component {
 
   updatePlaylistName(name) {
     this.setState({
-      playlistName: name
+      playlistName: name,
+      isCreated: false
     });
   }
 
   savePlaylist() {
     const trackURIs = this.state.playlistTracks.map(track => track.uri);
     Spotify.savePlaylist(this.state.playlistName, trackURIs).then(() => {
+      this.setState(defaultState);
       this.setState({
-        playlistName: "New Playlist"
+        isCreated: true
       });
     });
   }
@@ -66,8 +71,15 @@ class App extends React.Component {
     if (searchTerm) {
       Spotify.search(searchTerm).then(foundTracks => {
         this.setState({
-          searchResults: foundTracks
+          searchResults: foundTracks,
+          isCreated: false
         });
+      });
+    }
+    else {
+      this.setState({
+        searchResults: [],
+        isCreated: false
       });
     }
   }
@@ -90,6 +102,8 @@ class App extends React.Component {
               onNameChange={this.updatePlaylistName}
               onSave={this.savePlaylist} />
           </div>
+          {this.state.isCreated &&
+            <div className="playlist-success">Playlist Successfully Created!</div>}
         </div>
       </div>
     );

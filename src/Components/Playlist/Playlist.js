@@ -15,12 +15,20 @@ class Playlist extends React.Component {
   render() {
     return (
       <div className="Playlist">
-        <input defaultValue={'New Playlist'} onChange={this.handleNameChange}/>
+        <input
+          placeholder="Playlist name"
+          value={this.props.playlistName}
+          onChange={this.handleNameChange}/>
         <TrackList
           tracks={this.props.playlistTracks}
           onRemove={this.props.onRemove}
           isRemoval={true} />
-        <a className="Playlist-save" onClick={this.props.onSave}>SAVE TO SPOTIFY</a>
+        {(this.props.playlistName && this.props.playlistTracks.length !== 0) ?
+          <a className="Playlist-save" onClick={this.props.onSave}>
+            SAVE TO SPOTIFY
+          </a> :
+          <h4>Add a name and tracks!</h4>
+        }
       </div>
     );
   }
